@@ -5,7 +5,7 @@ lock = threading.Lock()
 def handle_client(conn, addr):
     try:
         msg_type = conn.recv(1024).decode().strip()
-        if msg_type.startwith("PUB:"):
+        if msg_type.startswith("PUB:"):
             parts = msg_type[4:].split(":", 1)
             if len(parts) != 2:
                 conn.close()
@@ -24,7 +24,7 @@ def handle_client(conn, addr):
         print(f"[!] Error con {addr}: {e}")    
     finally:
         conn.close()
-def start_broker(hots='0.0.0.0', port=14000):
+def start_broker(hots='localhost', port=14000):
     server = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
     server.bind((hots, port))
     server.listen(5)
