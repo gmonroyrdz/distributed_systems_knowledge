@@ -1,0 +1,82 @@
+version: '3.8'
+
+services:
+  sensor1:
+    build: ./sensor_service
+    environment:
+      - COLLECTOR_URL=http://collector:8081
+      - NEIGHBORHOOD=Centro
+    depends_on:
+      - collector
+    networks:
+      - ambient-network
+
+  sensor2:
+    build: ./sensor_service
+    environment:
+      - COLLECTOR_URL=http://collector:8081
+      - NEIGHBORHOOD=Norte
+    depends_on:
+      - collector
+    networks:
+      - ambient-network
+
+  collector:
+    build: ./collector_service
+    ports:
+      - "8081:8081"
+    environment:
+      - STORAGE_URL=http://storage:8082/data
+      - ALERT_URL=http://alert:8083/alerts
+    depends_on:
+      - storage
+      - alert
+    networks:
+      - ambient-network
+
+  storage:
+    build: ./storage_service
+    ports:
+      - "8082:8082"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysqldb:3306/ambient_data
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=@7vvlryPngn
+    depends_on:
+      - mysqldb
+    networks:
+      - ambient-network
+
+  alert:
+    build: ./alert_service
+    ports:
+      - "8083:8083"
+    networks:
+      - ambient-network
+
+  frontend:
+    build: ./frontend_service
+    ports:
+      - "8080:8080"
+    environment:
+      - STORAGE_URL=http://storage:8082/data
+    depends_on:
+      - storage
+    networks:
+      - ambient-network
+
+  mysqldb:
+    image: mysql:8.0
+    environment:
+      - MYSQL_ROOT_PASSWORD=@7vvlryPngn
+      - MYSQL_DATABASE=ambient_data
+    volumes:
+      - mysql-data:/var/lib/mysql
+    networks:
+      - ambient-network
+
+networks:
+  ambient-network:
+
+volumes:
+  mysql-data:

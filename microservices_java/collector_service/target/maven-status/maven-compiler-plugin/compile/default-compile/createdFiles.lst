@@ -1,0 +1,4 @@
+mx/uam/collector_service/CollectorController.class
+mx/uam/collector_service/entities/SensorData.class
+mx/uam/collector_service/DataDispacher.class
+mx/uam/collector_service/CollectorServiceApplication.class
